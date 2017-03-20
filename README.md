@@ -1,5 +1,7 @@
-## Install
+# Custom Linux for CHIP (Pro)
+![](chip-custom-linux-flowchart.png)
 
+## Install
 ```bash
 git clone https://github.com/msolters/chip-pro-custom-linux
 cd chip-pro-custom-linux
@@ -10,7 +12,7 @@ sh setup.sh
 Simply provide the `multistrap` config file for your desired Linux image, and pass it to `create-rootfs` script:
 
 ```bash
-./create-chip-rootfs.sh multistrap-config-examples/debian-netutils.conf
+sh create-chip-rootfs.sh multistrap-config-examples/debian-netutils.conf
 ```
 
 This will generate a `rootfs.tar` inside the `chip-pro-custom-linux` directory.
