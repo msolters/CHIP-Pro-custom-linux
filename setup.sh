@@ -8,3 +8,6 @@ if [ ! -d "$PWD/CHIP-SDK" ] ; then
 fi
 cd "$PWD/CHIP-SDK"
 bash setup_ubuntu1404.sh
+
+# multistrap dependencies
+sudo apt-get install multistrap qemu-user-static live-build
