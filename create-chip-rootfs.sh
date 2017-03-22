@@ -79,6 +79,7 @@ exit 0" > $ROOTFS_DIR/etc/rc.local
 # Incidental configuration of the customized rootfs
 # This will vary depending on your multistrap config specifics
 configure_rootfs () {
+
   # We'll need this for ARM emulation in the CHROOT:
   sudo cp /usr/bin/qemu-arm-static $ROOTFS_DIR/usr/bin
 
@@ -88,8 +89,10 @@ configure_rootfs () {
   $CHROOT_EXEC mount -t proc nodev /proc/
 
   # Configure & complete installation of packages
+  $CHROOT_EXEC chown root:root -R /bin /usr/bin /usr/sbin
+  # Fix sudo binary permissions
+  fix_sudo
   $CHROOT_EXEC dpkg --configure -a
-  sudo chown root:root -R /bin /usr/bin /usr/sbin
 
   #apt-get remove openssh-client openssh-server --purge
   #apt-get autoremove
@@ -100,9 +103,6 @@ configure_rootfs () {
 
   # Disable excessive WiFi driver logging
   suppress_dmesg
-
-  # Fix sudo binary permissions
-  fix_sudo
 
   # Update password of root user
   $CHROOT_EXEC passwd
@@ -122,9 +122,9 @@ bundle_rootfs () {
   tar -cvf $HERE/rootfs.tar .
 }
 
-#if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
-#  compile_chip_buildroot
-#fi
-#create_rootfs
+if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
+  compile_chip_buildroot
+fi
+create_rootfs
 configure_rootfs
-#bundle_rootfs
+bundle_rootfs
