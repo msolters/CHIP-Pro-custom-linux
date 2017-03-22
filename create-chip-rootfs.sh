@@ -40,7 +40,7 @@ copy_boot_modules () {
 
 # Create a rootfs using multistrap and clean any old data
 create_rootfs () {
-  sudo umount $ROOTFS_DIR/proc
+  sudo umount -l $ROOTFS_DIR/proc && sudo umount -f $ROOTFS_DIR/proc
   sudo rm -rf $HERE/rootfs.tar $ROOTFS_DIR
   multistrap -f $MULTISTRAP_CONF_FILE -d $ROOTFS_DIR
   copy_boot_modules
@@ -87,12 +87,13 @@ configure_rootfs () {
   # chroot into rootfs
   CHROOT_EXEC="sudo LC_ALL=C LANGUAGE=C LANG=C chroot $ROOTFS_DIR"
   #sudo mount -o bind /dev/ $ROOTFS_DIR/dev/
-  $CHROOT_EXEC mount -t proc nodev /proc/
 
   # Configure & complete installation of packages
   # Fix sudo binary permissions
   sudo chown root:root -R $ROOTFS_DIR/bin $ROOTFS_DIR/usr/bin $ROOTFS_DIR/usr/sbin
   fix_sudo
+
+  $CHROOT_EXEC mount -t proc nodev /proc/
   $CHROOT_EXEC dpkg --configure -a
 
   #apt-get remove openssh-client openssh-server --purge
@@ -112,17 +113,18 @@ configure_rootfs () {
   # Create new 'driblet' user
   # Note: do this as root
   $CHROOT_EXEC adduser hero_of_kvatch
-  #passwd hero_of_kvatch
   $CHROOT_EXEC usermod -aG sudo hero_of_kvatch
+  sudo cp -r $HERE/custom/6lbr $ROOTFS_DIR/home/hero_of_kvatch
 
   sudo rm $ROOTFS_DIR/usr/bin/qemu-arm-static
-  sudo umount $ROOTFS_DIR/proc
+  sudo umount -l $ROOTFS_DIR/proc && sudo umount -f $ROOTFS_DIR/proc
 }
 
 # Bundle final target rootfs as a tar file
 bundle_rootfs () {
+  sudo umount $ROOTFS_DIR/proc
   cd $ROOTFS_DIR
-  tar -cvf $HERE/rootfs.tar .
+  sudo tar -cf $HERE/rootfs.tar .
 }
 
 if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
@@ -130,4 +132,4 @@ if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
 fi
 create_rootfs
 configure_rootfs
-#bundle_rootfs
+bundle_rootfs
