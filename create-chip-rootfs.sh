@@ -130,4 +130,4 @@ if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
 fi
 create_rootfs
 configure_rootfs
-#bundle_rootfs
+bundle_rootfs
