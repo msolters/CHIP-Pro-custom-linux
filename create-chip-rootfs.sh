@@ -9,7 +9,7 @@
 #      CHIP-SDK/CHIP-buildroot/buildroot-rootfs
 
 # Usage:
-# sh build-rootfs.sh multistrap.conf
+# sh buildroot-rootfs.sh multistrap.conf
 #     Where multistrap.conf is the relative path to the multistrap config
 #     file you want to build your CHIP Pro image according to.
 
@@ -26,9 +26,9 @@ compile_chip_buildroot () {
   cd $BUILDROOT_PATH
   make chippro_defconfig
   make
-  rm -rf build-rootfs
-  mkdir build-rootfs
-  tar -xf $BUILDROOT_PATH/output/images/rootfs.tar -C ./build-rootfs
+  rm -rf buildroot-rootfs
+  mkdir buildroot-rootfs
+  sudo tar -xf $BUILDROOT_PATH/output/images/rootfs.tar -C ./buildroot-rootfs
 }
 
 # Copy over relevant kernel and kernel modules for the CHIP Pro board
