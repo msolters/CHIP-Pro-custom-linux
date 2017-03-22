@@ -50,8 +50,8 @@ create_rootfs () {
 fix_sudo () {
   for FILE in /usr/bin/sudo /usr/lib/sudo/sudoers.so /etc/sudoers /etc/sudoers.d /etc/sudoers.d/README /var/lib/sudo
   do
-    chown root:root $FILE
-    chmod 4755 $FILE
+    chown root:root $ROOTFS_DIR$FILE
+    chmod 4755 $ROOTFS_DIR$FILE
   done
 }
 
@@ -79,18 +79,16 @@ exit 0" > $ROOTFS_DIR/etc/rc.local
 # Incidental configuration of the customized rootfs
 # This will vary depending on your multistrap config specifics
 configure_rootfs () {
-  fix_sudo
-
-  # Mount rootfs as an armhf chroot
+  # We'll need this for ARM emulation in the CHROOT:
   sudo cp /usr/bin/qemu-arm-static $ROOTFS_DIR/usr/bin
 
   # chroot into rootfs
-  sudo LC_ALL=C LANGUAGE=C LANG=C chroot $ROOTFS_DIR
+  CHROOT_EXEC="sudo LC_ALL=C LANGUAGE=C LANG=C chroot $ROOTFS_DIR"
   #sudo mount -o bind /dev/ $ROOTFS_DIR/dev/
-  sudo mount -t proc nodev /proc/
+  $CHROOT_EXEC mount -t proc nodev /proc/
 
   # Configure & complete installation of packages
-  dpkg --configure -a
+  $CHROOT_EXEC dpkg --configure -a
   sudo chown root:root -R /bin /usr/bin /usr/sbin
 
   #apt-get remove openssh-client openssh-server --purge
@@ -98,17 +96,22 @@ configure_rootfs () {
   #apt-get install openssh-client openssh-server
 
   # Fix DNS resolution
-  echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  $CHROOT_EXEC echo "nameserver 127.0.0.1" > /etc/resolv.conf
+
+  # Disable excessive WiFi driver logging
   suppress_dmesg
 
+  # Fix sudo binary permissions
+  fix_sudo
+
   # Update password of root user
-  passwd
+  $CHROOT_EXEC passwd
 
   # Create new 'driblet' user
   # Note: do this as root
-  adduser driblet
-  passwd driblet
-  usermod -aG sudo driblet
+  $CHROOT_EXEC adduser hero_of_kvatch
+  #passwd hero_of_kvatch
+  $CHROOT_EXEC usermod -aG sudo hero_of_kvatch
 
   sudo rm $ROOTFS_DIR/usr/bin/qemu-arm-static
 }
@@ -119,9 +122,9 @@ bundle_rootfs () {
   tar -cvf $HERE/rootfs.tar .
 }
 
-if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
-  compile_chip_buildroot
-fi
-create_rootfs
+#if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
+#  compile_chip_buildroot
+#fi
+#create_rootfs
 configure_rootfs
-bundle_rootfs
+#bundle_rootfs
