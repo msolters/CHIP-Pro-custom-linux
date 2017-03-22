@@ -40,6 +40,7 @@ copy_boot_modules () {
 
 # Create a rootfs using multistrap and clean any old data
 create_rootfs () {
+  sudo umount $ROOTFS_DIR/proc
   sudo rm -rf $HERE/rootfs.tar $ROOTFS_DIR
   multistrap -f $MULTISTRAP_CONF_FILE -d $ROOTFS_DIR
   copy_boot_modules
@@ -50,8 +51,8 @@ create_rootfs () {
 fix_sudo () {
   for FILE in /usr/bin/sudo /usr/lib/sudo/sudoers.so /etc/sudoers /etc/sudoers.d /etc/sudoers.d/README /var/lib/sudo
   do
-    chown root:root $ROOTFS_DIR$FILE
-    chmod 4755 $ROOTFS_DIR$FILE
+    sudo chown root:root $ROOTFS_DIR$FILE
+    sudo chmod 4755 $ROOTFS_DIR$FILE
   done
 }
 
@@ -73,7 +74,7 @@ suppress_dmesg () {
 # By default this script does nothing.
 
 dmesg -D
-exit 0" > $ROOTFS_DIR/etc/rc.local
+exit 0" | sudo tee $ROOTFS_DIR/etc/rc.local
 }
 
 # Incidental configuration of the customized rootfs
@@ -89,8 +90,8 @@ configure_rootfs () {
   $CHROOT_EXEC mount -t proc nodev /proc/
 
   # Configure & complete installation of packages
-  $CHROOT_EXEC chown root:root -R /bin /usr/bin /usr/sbin
   # Fix sudo binary permissions
+  sudo chown root:root -R $ROOTFS_DIR/bin $ROOTFS_DIR/usr/bin $ROOTFS_DIR/usr/sbin
   fix_sudo
   $CHROOT_EXEC dpkg --configure -a
 
@@ -99,12 +100,13 @@ configure_rootfs () {
   #apt-get install openssh-client openssh-server
 
   # Fix DNS resolution
-  $CHROOT_EXEC echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  echo "nameserver 127.0.0.1" | sudo tee $ROOTFS_DIR/etc/resolv.conf
 
   # Disable excessive WiFi driver logging
   suppress_dmesg
 
   # Update password of root user
+  echo "Now setting a new root password for target:"
   $CHROOT_EXEC passwd
 
   # Create new 'driblet' user
@@ -114,6 +116,7 @@ configure_rootfs () {
   $CHROOT_EXEC usermod -aG sudo hero_of_kvatch
 
   sudo rm $ROOTFS_DIR/usr/bin/qemu-arm-static
+  sudo umount $ROOTFS_DIR/proc
 }
 
 # Bundle final target rootfs as a tar file
@@ -127,4 +130,4 @@ if [ ! -d "$BUILDROOT_PATH/buildroot-rootfs" ] ; then
 fi
 create_rootfs
 configure_rootfs
-bundle_rootfs
+#bundle_rootfs
