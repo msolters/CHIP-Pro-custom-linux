@@ -110,13 +110,17 @@ configure_rootfs () {
   echo "Now setting a new root password for target:"
   $CHROOT_EXEC passwd
 
-  # Create new 'driblet' user
+  # Create new user for us to use
   # Note: do this as root
   $CHROOT_EXEC adduser hero_of_kvatch
   $CHROOT_EXEC usermod -aG sudo hero_of_kvatch
-  sudo cp -r $HERE/custom/6lbr $ROOTFS_DIR/home/hero_of_kvatch
+  
+  # Et cetera... you can set up your target image here as you see fit.
+  # The above is provided only as guidance.
 
+  # Make sure to remove the emulator when we're done
   sudo rm $ROOTFS_DIR/usr/bin/qemu-arm-static
+  # Unmount the /proc directory
   sudo umount -l $ROOTFS_DIR/proc && sudo umount -f $ROOTFS_DIR/proc
 }
 
