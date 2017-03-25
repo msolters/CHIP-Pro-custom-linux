@@ -9,7 +9,7 @@
 #     file you want to build your CHIP Pro image according to.
 
 HERE="$PWD"
-MULTISTRAP_CONF_FILE="$HERE/$1"
+MULTISTRAP_CONF_FILE="$1"
 ROOTFS_DIR="$HERE/rootfs"
 SDK_PATH="$HERE/CHIP-SDK"
 BUILDROOT_PATH="$SDK_PATH/CHIP-buildroot"
