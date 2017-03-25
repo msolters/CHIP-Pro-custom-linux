@@ -4,8 +4,10 @@
 # in the directory.
 
 HERE="$PWD"
-MULTISTRAP_CONF_FILE="$HERE/$1"
+SDK_PATH="$HERE/CHIP-SDK"
 ROOTFS_DIR="$HERE/rootfs"
+CHIP_TOOLS_PATH="$SDK_PATH/CHIP-tools"
+UBOOT_PATH="$BUILDROOT_PATH/output/build/uboot-nextthing_2016.01_next"
 
 # rootfs/ -> ./rootfs.tar
 bundle_rootfs () {

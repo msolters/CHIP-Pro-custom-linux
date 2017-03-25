@@ -13,8 +13,6 @@ MULTISTRAP_CONF_FILE="$1"
 ROOTFS_DIR="$HERE/rootfs"
 SDK_PATH="$HERE/CHIP-SDK"
 BUILDROOT_PATH="$SDK_PATH/CHIP-buildroot"
-UBOOT_PATH="$BUILDROOT_PATH/output/build/uboot-nextthing_2016.01_next"
-CHIP_TOOLS_PATH="$SDK_PATH/CHIP-tools"
 
 # This compiles CHIP-buildroot and decompresses the resulting rootfs
 # into the CHIP-buildroot/buildroot-rootfs directory for later reference.
