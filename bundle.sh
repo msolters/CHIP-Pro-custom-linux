@@ -7,6 +7,7 @@ HERE="$PWD"
 SDK_PATH="$HERE/CHIP-SDK"
 ROOTFS_DIR="$HERE/rootfs"
 CHIP_TOOLS_PATH="$SDK_PATH/CHIP-tools"
+BUILDROOT_PATH="$SDK_PATH/CHIP-buildroot"
 UBOOT_PATH="$BUILDROOT_PATH/output/build/uboot-nextthing_2016.01_next"
 
 # rootfs/ -> ./rootfs.tar
