@@ -21,7 +21,7 @@ compile_chip_buildroot () {
   cd $BUILDROOT_PATH
   make chippro_defconfig
   make
-  rm -rf buildroot-rootfs
+  sudo rm -rf buildroot-rootfs
   mkdir buildroot-rootfs
   sudo tar -xf $BUILDROOT_PATH/output/images/rootfs.tar -C ./buildroot-rootfs
 }
